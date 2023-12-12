@@ -1,4 +1,4 @@
-class Game:
+class H_vs_H_Game:
     def __init__(self):
         self.board = [[' ' for _ in range(3)] for _ in range(3)]
         self.currentPlayer = 'X'
@@ -51,5 +51,49 @@ class Game:
             print("")
             self.printBoard()
 
-newGame = Game()
-newGame.play()
+class H_vs_C_Game:
+    def __init__(self):
+        self.board = [[' ' for _ in range(3)] for _ in range(3)]
+
+    def printBoard(self):
+        print("\n".join(["|".join(row) for row in self.board]) + "\n")
+    
+    def _presetBoard(self, preset):
+        self.board = preset
+
+    def makeMove(self, move: tuple[int,int]):
+        self.board[move[0]][move[1]] = self.whoseTurn()
+
+    def isWinner(self, player: str) -> bool:
+        rowsWin = any(all(cell == player for cell in row) for row in self.board)
+        colsWin = any(all(row[col] == player for row in self.board) for col in range(0,3))
+        diag1Win = all(self.board[i][i] == player for i in range(3))
+        diag2Win = all(self.board[i][2-i] == player for i in range(3))
+        return rowsWin or colsWin or diag1Win or diag2Win 
+
+    def boardFull(self) -> bool:
+        return all(cell != ' ' for row in self.board for cell in row)
+    
+    def possibleMoves(self) -> list:
+        moves = []
+        for r in range(3):
+            for c in range(3):
+                if self.board[r][c] == ' ':
+                    moves.append((r,c))
+        return moves
+
+    def whoseTurn(self) -> str:
+        x_count = sum(row.count('X') for row in self.board)
+        o_count = sum(row.count('O') for row in self.board)
+        if (x_count + o_count) % 2 == 0: return 'X'
+        else: return 'O'
+
+newGame = H_vs_C_Game()
+
+myboard = [['X','O','X'],
+           [' ','X','O'],
+           [' ','X','O']]
+
+newGame._presetBoard(preset=myboard)
+
+print(newGame.possibleMoves())
